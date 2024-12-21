@@ -1,0 +1,201 @@
+---
+import "../resume.types";
+import {
+  faAnglesRight,
+  faBellConcierge,
+  faCalendar,
+  faCartShopping,
+  faFileContract,
+  faFileInvoiceDollar,
+  faIdCardClip,
+  faIndustry,
+  faPeopleGroup,
+  faSignHanging,
+  faUserDoctor,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import dayjs from "dayjs";
+
+type Props = { experience: Experience; showDates?: boolean };
+
+const params = Astro.url.searchParams;
+
+const skill_filter = params.get("skill")?.split(",");
+const industry_filter = params.get("industry")?.split(",");
+const from_filter = params.get("from");
+
+const hasSkill = (experience: Experience) =>
+  !skill_filter ||
+  (skill_filter &&
+    experience.skills.some((skill) => skill_filter.some((s) => skill == s)));
+const hasIndustry = (experience: Experience) =>
+  !industry_filter ||
+  (industry_filter &&
+    industry_filter.some((ind) => experience.industry == ind));
+const isInFromRange = (experience: Experience) =>
+  !from_filter ||
+  (from_filter && dayjs(experience.date.to).isAfter(dayjs(from_filter)));
+
+const shouldRenderSection = (experience: Experience) => {
+  if (!from_filter && !skill_filter && !industry_filter) return true;
+
+  return (
+    hasSkill(experience) && hasIndustry(experience) && isInFromRange(experience)
+  );
+};
+
+const { experience, showDates = true } = Astro.props;
+const skills = experience.skills?.slice();
+const first_skill = skills?.shift();
+---
+
+<div>
+  <div class="grid grid-flow-row break-inside-avoid">
+    <div class="text-lg font-bold">{experience.title}</div>
+    <div class="flex space-x-1 items-center text-nowrap">
+      <div class="font-semibold">{experience.company}</div>
+      <div class="border-l-2 px-1 text-sm text-gray-600">
+        {experience.location}
+      </div>
+      {
+        experience.type && experience.type === "full-time" && (
+          <div class="flex items-center space-x-1 border-l-2 px-1 text-sm text-gray-600">
+            <div class="size-3 -translate-y-px">
+              <FontAwesomeIcon icon={faIdCardClip} />
+            </div>
+            <div class="capitalize">Full-Time</div>
+          </div>
+        )
+      }
+      {
+        experience.type && experience.type === "contract" && (
+          <div class="flex items-center space-x-1 border-l-2 px-1 text-sm text-gray-600">
+            <div class="size-2 -translate-y-0.5">
+              <FontAwesomeIcon icon={faFileContract} />
+            </div>
+            <div class="capitalize">contract</div>
+          </div>
+        )
+      }
+      {
+        experience.industry && experience.industry === "healthcare" && (
+          <div class="flex items-center space-x-1 border-l-2 px-1 text-sm text-gray-600">
+            <div class="size-2.5 -translate-y-0.5">
+              <FontAwesomeIcon icon={faUserDoctor} />
+            </div>
+            <div class="capitalize">healthcare</div>
+          </div>
+        )
+      }
+      {
+        experience.industry && experience.industry === "consulting" && (
+          <div class="flex items-center space-x-1 border-l-2 px-1 text-sm text-gray-600">
+            <div class="size-3">
+              <FontAwesomeIcon icon={faPeopleGroup} />
+            </div>
+            <div class="capitalize">consulting</div>
+          </div>
+        )
+      }
+      {
+        experience.industry && experience.industry === "finance" && (
+          <div class="flex items-center space-x-1 border-l-2 px-1 text-sm text-gray-600">
+            <div class="size-2.5 -translate-y-0.5">
+              <FontAwesomeIcon icon={faFileInvoiceDollar} />
+            </div>
+            <div class="capitalize">financial</div>
+          </div>
+        )
+      }
+      {
+        experience.industry && experience.industry === "realestate" && (
+          <div class="flex items-center space-x-1 border-l-2 px-1 text-sm text-gray-600">
+            <div class="size-2.5 -translate-y-0.5">
+              <FontAwesomeIcon icon={faSignHanging} />
+            </div>
+            <div class="capitalize">real estate</div>
+          </div>
+        )
+      }
+      {
+        experience.industry && experience.industry === "ecommerce" && (
+          <div class="flex items-center space-x-1 border-l-2 px-1 text-sm text-gray-600">
+            <div class="size-2.5">
+              <FontAwesomeIcon icon={faCartShopping} />
+            </div>
+            <div class="capitalize">e-commerce</div>
+          </div>
+        )
+      }
+      {
+        experience.industry && experience.industry === "hospitality" && (
+          <div class="flex items-center space-x-1 border-l-2 px-1 text-sm text-gray-600">
+            <div class="size-2.5">
+              <FontAwesomeIcon icon={faBellConcierge} />
+            </div>
+            <div class="capitalize">hospitality</div>
+          </div>
+        )
+      }
+      {
+        experience.industry && experience.industry === "industrial" && (
+          <div class="flex items-center space-x-1 border-l-2 px-1 text-sm text-gray-600">
+            <div class="size-3">
+              <FontAwesomeIcon icon={faIndustry} />
+            </div>
+            <div class="capitalize">manufacturing</div>
+          </div>
+        )
+      }
+      {
+        showDates && (
+          <div class="grow justify-end px-1 flex space-x-1 items-center text-sm text-nowrap">
+            <div class="size-3 -translate-y-0.5">
+              <FontAwesomeIcon icon={faCalendar} />
+            </div>
+            <div class="">{experience.date.from}</div>
+            <div class="shrink">-</div>
+            <div>{experience.date.to}</div>
+          </div>
+        )
+      }
+    </div>
+  </div>
+  <div class="flex flex-wrap space-x-2">
+    {
+      first_skill && (
+        <div class="text-center text-sm text-nowrap text-gray-700">{first_skill}</div>
+      )
+    }
+    {
+      skills &&
+        skills.map((tech: string) => (
+          <div class="text-center text-sm text-nowrap text-gray-700 border-l-2 border-dotted pl-2">
+            {tech}
+          </div>
+        ))
+    }
+  </div>
+  {
+    shouldRenderSection(experience) && (
+      <section>
+        {experience.synopsis && (
+          <div class="py-2 text-sm">{experience.synopsis}</div>
+        )}
+        {experience.accomplishments && (
+          <div class="flex flex-col py-1">
+            {experience.accomplishments.map((acc) => (
+              <div class="flex space-x-2">
+                <div class="size-2.5 translate-y-1">
+                  <FontAwesomeIcon icon={faAnglesRight} />
+                </div>
+                <div class="text-sm text-wrap">{acc}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        <slot />
+      </section>
+    )
+  }
+</div>

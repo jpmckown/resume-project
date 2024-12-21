@@ -1,0 +1,158 @@
+---
+import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import {
+  faEnvelope,
+  faLocationDot,
+  faPhone,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "../resume.types";
+import Experience from "../components/Experience.astro";
+import Layout from './Layout.astro';
+
+const { frontmatter } = Astro.props;
+---
+<Layout>
+  <div class="space-y-3 font-roboto">
+    <div class="text-4xl">{frontmatter.name}</div>
+    <!-- intro -->
+    <div class="grid grid-rows-3 grid-flow-col text-sm">
+      <div class="flex gap-2 items-center">
+        <div class="size-2.5"><FontAwesomeIcon icon={faEnvelope} /></div>
+        <div><a href={`mailto:${frontmatter.email}`}>{frontmatter.email}</a></div>
+      </div>
+      {
+        frontmatter.phone && (
+          <div class="flex gap-2 items-center">
+            <div class="size-2.5">
+              <FontAwesomeIcon icon={faPhone} />
+            </div>
+            <div>
+              <a href={`tel:+1${frontmatter.phone}`}>{frontmatter.phone}</a>
+            </div>
+          </div>
+        )
+      }
+      {
+        frontmatter.location && (
+          <div class="flex gap-2 items-center">
+            <div class="size-2.5">
+              <FontAwesomeIcon icon={faLocationDot} />
+            </div>
+            <div>{frontmatter.location}</div>
+          </div>
+        )
+      }
+      {
+        frontmatter.linkedin && (
+          <div class="flex gap-2 items-center">
+            <div class="size-3">
+              <FontAwesomeIcon icon={faLinkedin} />
+            </div>
+            <div>
+              <a href={frontmatter.linkedin.url} target="_blank">
+                {frontmatter.linkedin.display ?? frontmatter.linkedin.url}
+              </a>
+            </div>
+          </div>
+        )
+      }
+      {
+        frontmatter.github && (
+          <div class="flex gap-2 items-center">
+            <div class="size-3">
+              <FontAwesomeIcon icon={faGithub} />
+            </div>
+            <div>
+              <a href={frontmatter.github.url} target="_blank">
+                {frontmatter.github.display ?? frontmatter.github.url}
+              </a>
+            </div>
+          </div>
+        )
+      }
+    </div>
+    <!-- experience -->
+    <div class="">
+      <div class="flex space-x-2 items-center">
+        <div class="text-xl uppercase">experience</div>
+        <div class="grow my-auto border-2 border-blue-400"></div>
+      </div>
+      <div class="grid grid-flow-row gap-1 divide-y-2 divide-dashed">
+        {
+          frontmatter.experience &&
+            frontmatter.experience.map((experience: Experience) => <Experience experience={experience}>
+              {experience.projects && 
+                <div class="text-lg capitalize">projects</div>
+                <div class="flex flex-col border-blue-400 border-4 rounded mx-2 px-2">
+                  {experience.projects.map(prj => <Experience experience={prj} showDates={false} />)}
+                </div>}
+            </Experience>)
+        }
+      </div>
+    </div>
+  
+    <!-- skills -->
+    <div class="flex space-x-2 items-center">
+      <div class="flex flex-col space-y-1 grow break-inside-avoid">
+        <div class="flex space-x-2 items-center">
+          <div class="text-xl uppercase">skills</div>
+          <div class="grow my-auto border-2 border-blue-400"></div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          {
+            frontmatter.skills &&
+              frontmatter.skills.map((skill: string) => (
+                <div class="rounded-lg border-2 border-black p-1 text-sm text-center">
+                  {skill}
+                </div>
+              ))
+          }
+        </div>
+      </div>
+    </div>
+  
+    <!-- education & certification -->
+    <div class="grid grid-cols-2 gap-2 space-x-2 pt-1">
+      <!-- education -->
+      <div class="flex flex-col space-y-1">
+        <div class="flex space-x-2 items-center">
+          <div class="text-xl uppercase">education</div>
+          <div class="grow my-auto border-2 border-blue-400"></div>
+        </div>
+        <div class="grid gap-0.5 grid-cols-2">
+          <div class="text-lg font-bold text-nowrap">
+            {frontmatter.education.school}
+          </div>
+          <div class="text-sm">{frontmatter.education.url ?? ""}</div>
+          {
+            frontmatter.education.degree && (
+              <div class="text-sm text-nowrap">
+                {frontmatter.education.degree}
+              </div>
+            )
+          }
+          {
+            frontmatter.education.graduated && (
+              <div class="text-sm ml-auto pr-2">
+                {frontmatter.education.graduated}
+              </div>
+            )
+          }
+        </div>
+      </div>
+      <!-- certifications -->
+      {
+        frontmatter.certifications && (
+          <div class="flex flex-col space-y-1">
+            <div class="flex space-x-2 items-center">
+              <div class="text-xl uppercase">certifications</div>
+              <div class="grow my-auto border-2 border-blue-400" />
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>
+
